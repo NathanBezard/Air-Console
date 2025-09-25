@@ -4,9 +4,11 @@ const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
+
+// Allow CORS from anywhere (needed for phone access)
 const io = new Server(server, {
   cors: {
-    origin: "*", // allow React dev server
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -16,7 +18,7 @@ io.on("connection", (socket) => {
 
   socket.on("chat message", (msg) => {
     console.log("Message from client:", msg);
-    io.emit("chat message", msg); // broadcast to everyone
+    io.emit("chat message", msg);
   });
 
   socket.on("disconnect", () => {
@@ -25,5 +27,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(4000, () => {
-  console.log("Server running on http://localhost:4000");
+  console.log("✅ Server running on http://10.84.108.10:4000");
 });
