@@ -1,0 +1,23 @@
+{
+  "name": "air-console",
+  "version": "1.0.0",
+  "description": "Web console that you can connect to with your phone",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NathanBezard/Air-Console.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NathanBezard/Air-Console/issues"
+  },
+  "homepage": "https://github.com/NathanBezard/Air-Console#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}
