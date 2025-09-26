@@ -27,5 +27,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(4000, () => {
-  console.log("✅ Server running on http://10.84.108.10:4000");
+  console.log("✅ Server running on http://192.168.83.223:4000");
 });
