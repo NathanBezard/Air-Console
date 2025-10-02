@@ -29,3 +29,10 @@ io.on("connection", (socket) => {
 server.listen(4000, () => {
   console.log("✅ Server running on http://192.168.83.223:4000");
 });
+
+const ip = require("ip");
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  socket.emit("server-ip", ip.address()); // send PC's LAN IP
+});

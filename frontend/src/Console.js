@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import GameContainer from './components/Games.js';
 import QRCodeComponent from './components/Qrcode.js';
-
-const socket = io("http://192.168.83.223:4000");
+import socket from "./socket.js";
 
 function Console() {
   const [messages, setMessages] = useState([]);
