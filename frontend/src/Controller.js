@@ -34,71 +34,73 @@ function Controller() {
   return (
     <div>
       <div style={{ padding: "20px" }}>
-        <h1>Controller</h1>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a command"
-        />
-        <button onClick={sendMessage}>Send</button>
+        <h1>Controller, Turn youre phone</h1>
       </div>
       <button
         onContextMenu={(e) => e.preventDefault()}
-        onMouseDown={() => startMoving("up")}
+        onMouseDown={() => startMoving("left")}
         onMouseUp={stopMoving}
         onMouseLeave={stopMoving}
-        onTouchStart={(e) => { e.preventDefault(); startMoving("up"); }}
+        onTouchStart={(e) => { e.preventDefault(); startMoving("left"); }}
         onTouchEnd={stopMoving}
         >
         <img 
           src="image/arrow_up.png" 
-          width="50"
-          height="50"
+          width="150"
+          height="150"
         />
       </button>
       <div>
         <button
           onContextMenu={(e) => e.preventDefault()}
-          onMouseDown={() => startMoving("left")}
+          onMouseDown={() => startMoving("down")}
           onMouseUp={stopMoving}
           onMouseLeave={stopMoving}
-          onTouchStart={(e) => { e.preventDefault(); startMoving("left"); }}
+          onTouchStart={(e) => { e.preventDefault(); startMoving("down"); }}
           onTouchEnd={stopMoving}
         >
         <img 
           src="image/arrow_left.png"
-          width="50"
-          height="50"/>
+          width="150"
+          height="150"/>
         </button>
         <button
           onContextMenu={(e) => e.preventDefault()}
-          onMouseDown={() => startMoving("right")}
+          onMouseDown={() => startMoving("up")}
           onMouseUp={stopMoving}
           onMouseLeave={stopMoving}
-          onTouchStart={(e) => { e.preventDefault(); startMoving("right"); }}
+          onTouchStart={(e) => { e.preventDefault(); startMoving("up"); }}
           onTouchEnd={stopMoving}
           >
           <img 
             src="image/arrow_right.png"
-            width="50"
-            height="50"/>
+            width="150"
+            height="150"/>
         </button>
       </div>
       <button
         onContextMenu={(e) => e.preventDefault()}
-        onMouseDown={() => startMoving("down")}
+        onMouseDown={() => startMoving("right")}
         onMouseUp={stopMoving}
         onMouseLeave={stopMoving}
-        onTouchStart={(e) => { e.preventDefault(); startMoving("down"); }}
+        onTouchStart={(e) => { e.preventDefault(); startMoving("right"); }}
         onTouchEnd={stopMoving}
       >
         <img 
           src="image/arrow_down.png"
-          width="50"
-          height="50"/>
+          width="150"
+          height="150"/>
       </button>
     </div>
   );
 }
 
 export default Controller;
+
+
+//<input
+//          value={input}
+//          onChange={(e) => setInput(e.target.value)}
+//          placeholder="Type a command"
+//        />
+//        <button onClick={sendMessage}>Send</button>

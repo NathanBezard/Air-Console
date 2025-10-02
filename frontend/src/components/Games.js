@@ -15,8 +15,6 @@ function GameContainer() {
     return () => socket.off("chat message");
   }, []);
   
-
-
   return (
     <div>
     <iframe
