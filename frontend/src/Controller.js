@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import socket from "./socket";
 
 function Controller() {
@@ -6,7 +6,6 @@ function Controller() {
 
   const sendMessage = () => {
     if (input.trim()) {
-      console.log("📤 Sending:", input);
       socket.emit("chat message", input);
       setInput("");
     }
@@ -14,6 +13,22 @@ function Controller() {
 
   const sendDirection = (direction) => {
     socket.emit("chat message", direction);
+  };
+
+
+  const intervalRef = useRef(null);
+
+  const startMoving = (dir) => {
+    sendDirection(dir);
+
+    intervalRef.current = setInterval(() => {
+      sendDirection(dir);
+    }, 100);
+  };
+
+  const stopMoving = () => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
   };
 
   return (
@@ -27,12 +42,61 @@ function Controller() {
         />
         <button onClick={sendMessage}>Send</button>
       </div>
-      <button onClick={() => sendDirection("Up")}>Up</button>
+      <button
+        onContextMenu={(e) => e.preventDefault()}
+        onMouseDown={() => startMoving("up")}
+        onMouseUp={stopMoving}
+        onMouseLeave={stopMoving}
+        onTouchStart={(e) => { e.preventDefault(); startMoving("up"); }}
+        onTouchEnd={stopMoving}
+        >
+        <img 
+          src="image/arrow_up.png" 
+          width="50"
+          height="50"
+        />
+      </button>
       <div>
-      <button onClick={() => sendDirection("Left")}>Left</button>
-      <button onClick={() => sendDirection("Right")}>Right</button>
+        <button
+          onContextMenu={(e) => e.preventDefault()}
+          onMouseDown={() => startMoving("left")}
+          onMouseUp={stopMoving}
+          onMouseLeave={stopMoving}
+          onTouchStart={(e) => { e.preventDefault(); startMoving("left"); }}
+          onTouchEnd={stopMoving}
+        >
+        <img 
+          src="image/arrow_left.png"
+          width="50"
+          height="50"/>
+        </button>
+        <button
+          onContextMenu={(e) => e.preventDefault()}
+          onMouseDown={() => startMoving("right")}
+          onMouseUp={stopMoving}
+          onMouseLeave={stopMoving}
+          onTouchStart={(e) => { e.preventDefault(); startMoving("right"); }}
+          onTouchEnd={stopMoving}
+          >
+          <img 
+            src="image/arrow_right.png"
+            width="50"
+            height="50"/>
+        </button>
       </div>
-      <button onClick={() => sendDirection("Down")}>Down</button>
+      <button
+        onContextMenu={(e) => e.preventDefault()}
+        onMouseDown={() => startMoving("down")}
+        onMouseUp={stopMoving}
+        onMouseLeave={stopMoving}
+        onTouchStart={(e) => { e.preventDefault(); startMoving("down"); }}
+        onTouchEnd={stopMoving}
+      >
+        <img 
+          src="image/arrow_down.png"
+          width="50"
+          height="50"/>
+      </button>
     </div>
   );
 }
