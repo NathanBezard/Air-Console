@@ -29,6 +29,9 @@
       var paddleHeight = 10;
       var paddleWidth = 75;
       var paddleX = (canvas.width-paddleWidth)/2;
+      var paddle2Height = 10;
+      var paddle2Width = 75;
+      var paddle2X = (canvas.width-paddle2Width)/2;
       var rightPressed = false;
       var leftPressed = false;
       var brickRowCount = 5;
@@ -53,6 +56,16 @@
         if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
       }
 
+      window.movePaddle2Left = function() {
+        paddle2X -= 15;
+        if (paddle2X < 0) paddle2X = 0;
+      }
+    
+      window.movePaddle2Right = function() {
+        paddle2X += 15;
+        if (paddle2X > canvas.width - paddle2Width) paddle2X = canvas.width - paddle2Width;
+      }
+
       for(var c=0; c<brickColumnCount; c++) {
         bricks[c] = [];
         for(var r=0; r<brickRowCount; r++) {
@@ -60,13 +73,21 @@
         }
       }
 
+
+
       window.addEventListener("message", (event) => {
         if (!event.data || !event.data.type) return;
-      
-        if (event.data.type === "left") {
+        const command = event.data.type;
+
+        if (command === "1 left") {
           window.movePaddleLeft();
-        } else if (event.data.type === "right") {
+        } else if (command === "1 right") {
           window.movePaddleRight();
+        }
+        else if (command === "2 left") {
+          window.movePaddle2Left();
+        } else if (command === "2 right") {
+          window.movePaddle2Right();
         }
       });
 
@@ -99,6 +120,13 @@
         ctx.beginPath();
         ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
         ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+      function drawPaddle2() {
+        ctx.beginPath();
+        ctx.rect(paddle2X, canvas.height-paddle2Height-20, paddle2Width, paddle2Height);
+        ctx.fillStyle = "#FF6D2D";
         ctx.fill();
         ctx.closePath();
       }
@@ -135,6 +163,7 @@
         drawBricks();
         drawBall();
         drawPaddle();
+        drawPaddle2();
         drawScore();
         drawLives();
         collisionDetection();
@@ -154,6 +183,10 @@
                     paddleX = (canvas.width-paddleWidth)/2;
                 }
             }
+            
+        } else if (y + dy > canvas.height-ballRadius-20) {
+            if(x > paddle2X && x < paddle2X + paddle2Width)
+              dy = -dy;
         }
       
         x += dx;

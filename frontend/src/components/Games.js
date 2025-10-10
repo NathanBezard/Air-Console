@@ -9,9 +9,11 @@ function GameContainer() {
   useEffect(() => {
     socket.on("chat message", (msg) => {
       if (iframeRef.current) {
-        iframeRef.current.contentWindow.postMessage({ type: msg }, "*");
+        const formatted = `${msg.id} ${msg.message}`;
+        iframeRef.current.contentWindow.postMessage({ type: formatted }, "*");
       }
     });
+    
     return () => socket.off("chat message");
   }, []);
   

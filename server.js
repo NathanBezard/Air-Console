@@ -1,38 +1,51 @@
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
+const ip = require("ip");
 
 const app = express();
 const server = http.createServer(app);
-
-// Allow CORS from anywhere (needed for phone access)
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
+  cors: { origin: "*" },
 });
 
-io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+let nextPlayerId = 1;                 // next new ID to assign if no recycled ones
+const availableIds = [];              // queue of freed IDs
+const players = {};                   // maps socket.id -> playerId
 
+io.on("connection", (socket) => {
+  // Assign the smallest available ID, or a new one
+  let playerId;
+  if (availableIds.length > 0) {
+    // use the smallest freed ID
+    playerId = availableIds.shift();
+  } else {
+    playerId = nextPlayerId++;
+  }
+
+  players[socket.id] = playerId;
+  console.log(`Player ${playerId} connected (socket ${socket.id})`);
+
+  // Send ID to the connected client
+  socket.emit("assign-id", playerId);
+
+  // Handle messages
   socket.on("chat message", (msg) => {
-    console.log("Message from client:", msg);
-    io.emit("chat message", msg);
+    console.log(`Player ${playerId}: ${msg}`);
+    io.emit("chat message", { id: playerId, message: msg });
   });
 
+  // Handle disconnection
   socket.on("disconnect", () => {
-    console.log("A user disconnected:", socket.id);
+    console.log(`Player ${playerId} disconnected`);
+    delete players[socket.id];
+
+    // Recycle the ID (keep list sorted)
+    availableIds.push(playerId);
+    availableIds.sort((a, b) => a - b);
   });
 });
 
 server.listen(4000, () => {
-  console.log("✅ Server running on http://192.168.83.223:4000");
-});
-
-const ip = require("ip");
-
-io.on("connection", (socket) => {
-  console.log("New client connected");
-  socket.emit("server-ip", ip.address()); // send PC's LAN IP
+  console.log(`Server running on http://${ip.address()}:4000`);
 });

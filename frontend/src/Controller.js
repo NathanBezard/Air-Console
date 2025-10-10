@@ -1,41 +1,37 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import socket from "./socket";
 
 function Controller() {
-  const [input, setInput] = useState("");
+  const [playerId, setPlayerId] = useState(null);
+  const intervalRef = useRef(null);
 
-  const sendMessage = () => {
-    if (input.trim()) {
-      socket.emit("chat message", input);
-      setInput("");
+  useEffect(() => {
+    socket.on("assign-id", (id) => {
+      console.log("Assigned player ID:", id);
+      setPlayerId(id);
+    });
+
+    return () => socket.off("assign-id");
+  }, []);
+
+  const sendDirection = (direction) => {
+    if (playerId !== null) {
+      socket.emit("chat message", `${direction}`);
     }
   };
 
-  const sendDirection = (direction) => {
-    socket.emit("chat message", direction);
-  };
-
-
-  const intervalRef = useRef(null);
-
   const startMoving = (dir) => {
     sendDirection(dir);
-
-    intervalRef.current = setInterval(() => {
-      sendDirection(dir);
-    }, 100);
+    intervalRef.current = setInterval(() => sendDirection(dir), 100);
   };
 
   const stopMoving = () => {
     clearInterval(intervalRef.current);
-    intervalRef.current = null;
   };
 
   return (
-    <div>
-      <div style={{ padding: "20px" }}>
-        <h1>Controller, Turn youre phone</h1>
-      </div>
+    <div style={{ textAlign: "center" }}>
+      <h1>Controller #{playerId ?? "Connecting..."}</h1>
       <button
         onContextMenu={(e) => e.preventDefault()}
         onMouseDown={() => startMoving("left")}
@@ -96,6 +92,7 @@ function Controller() {
 }
 
 export default Controller;
+
 
 
 //<input
