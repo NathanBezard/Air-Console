@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import socket from "../socket.js";
 
 function GameContainer() {
-
-
+  const [currentGame, setCurrentGame] = useState("/Games/Breakout/breakout.html");
   const iframeRef = useRef(null);
 
   useEffect(() => {
@@ -21,11 +20,18 @@ function GameContainer() {
     <div>
     <iframe
       ref={iframeRef}
-      src="/Games/Breakout/breakout.html"
+      src={currentGame}
       width="600"
       height="400"
       title="test Embed"
     />
+    <button onClick={() => setCurrentGame("/Games/Breakout/breakout.html")}>
+      Breakout
+    </button>
+    <button onClick={() => setCurrentGame("/Games/Breakout2/breakout2.html")}>
+      Breakout2
+    </button>
+    <h2>Current game: {currentGame}</h2>
     </div>
   );
 }
