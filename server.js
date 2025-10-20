@@ -9,7 +9,7 @@ const io = new Server(server, {
   cors: { origin: "*" },
 });
 
-let nextPlayerId = 1;                 // next new ID to assign if no recycled ones
+let nextPlayerId = 0;                 // next new ID to assign if no recycled ones
 const availableIds = [];              // queue of freed IDs
 const players = {};                   // maps socket.id -> playerId
 
@@ -46,6 +46,12 @@ io.on("connection", (socket) => {
   });
 });
 
+const serverIP = ip.address();
+app.get("/api/ip", (req, res) => {
+  res.json({ ip: serverIP });
+});
+
+
 server.listen(4000, () => {
-  console.log(`Server running on http://${ip.address()}:4000`);
+  console.log(`✅ Server running on http://${serverIP}:4000`);
 });

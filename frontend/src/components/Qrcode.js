@@ -1,58 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import socket from "../socket";
 
 const QRCodeComponent = () => {
-  const [localIp, setLocalIp] = useState(null);
+  const [ip, setIp] = useState("");
 
   useEffect(() => {
-    if (socket.localIp) {
-      // already available
-      setLocalIp(socket.localIp);
-    } else {
-      // wait until it arrives
-      socket.on("server-ip", (serverIp) => {
-        setLocalIp(serverIp);
+    // Build the URL dynamically based on where the frontend is running
+    const backendURL = `http://${window.location.hostname}:4000/api/ip`;
+
+    fetch(backendURL)
+      .then(res => res.json())
+      .then(data => {
+        console.log("✅ Fetched IP from backend:", data.ip);
+        setIp(data.ip);
+      })
+      .catch(err => {
+        console.error("❌ Failed to fetch IP:", err);
+        setIp(window.location.hostname); // fallback to hostname if needed
       });
-    }
   }, []);
 
-  if (!localIp) return <p>Loading...</p>;
+  if (!ip) return <p>Loading QR...</p>;
 
-  // ✅ Both values are now in sync
-  const testurl = socket.localIp; // raw IP from socket
-  const controllerURL = `http://${localIp}:3000/controller`;
+  const controllerURL = `http://10.84.106.233:3000/Controller`;
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>Scan to open Controller</h2>
-      <p>Test URL: {testurl}</p>
       <QRCodeSVG value={controllerURL} size={200} />
-      <p>Controller URL: {controllerURL}</p>
+      <p>{controllerURL}</p>
     </div>
   );
 };
 
 export default QRCodeComponent;
-
-//import React from 'react';
-//import { QRCodeSVG } from 'qrcode.react';
-//import socket from '../socket';
-//
-//const QRCodeComponent = () => {
-//  const localIP = "10.84.107.233:3000";
-//  const controllerURL = `http://${localIP}/Controller`;
-//  const testurl = socket.io.uri;
-//
-//  return (
-//    <div style={{ textAlign: "center", marginTop: "50px" }}>
-//      <h2>Scan to open Controller</h2>
-//      <QRCodeSVG value={controllerURL} size={200} />
-//      <p>{controllerURL}</p>
-//      <p>Socket connected to: {testurl}</p>
-//    </div>
-//  );
-//};
-//
-//export default QRCodeComponent;
-//

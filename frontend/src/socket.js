@@ -1,15 +1,11 @@
 // src/socket.js
 import { io } from "socket.io-client";
 
-// Detect current host (localhost on PC, IP when opened from phone)
-const protocol = window.location.protocol;       // "http:" or "https:"
-const host = window.location.hostname;           // e.g. "localhost" or "10.10.159.141"
-const backendPort = 4000;                        // backend Node.js port
+const backendUrl = window.location.hostname === "localhost"
+  ? "http://localhost:4000"
+  : `http://${window.location.hostname}:4000`;
 
-const url = `${protocol}//${host}:${backendPort}`;
-console.log("🔌 Connecting to backend:", url);
-
-const socket = io(url);
+const socket = io(backendUrl, { transports: ["websocket"] });
 
 export default socket;
 
