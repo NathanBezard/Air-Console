@@ -3,6 +3,7 @@ import socket from "../socket.js";
 
 function GameContainer() {
   const [currentGame, setCurrentGame] = useState("/Games/Breakout/breakout.html");
+  const [gameName, setGameName] = useState("Breakout");
   const iframeRef = useRef(null);
 
   useEffect(() => {
@@ -15,6 +16,12 @@ function GameContainer() {
     
     return () => socket.off("chat message");
   }, []);
+
+  const setGame = (nameGame) => {
+    const nameDir = nameGame.charAt(0).toUpperCase() + nameGame.slice(1);
+    setGameName(nameDir);
+    setCurrentGame(`/Games/${nameDir}/${nameGame}.html`);
+  };
   
   return (
     <div>
@@ -25,13 +32,13 @@ function GameContainer() {
       height="400"
       title="test Embed"
     />
-    <button onClick={() => setCurrentGame("/Games/Breakout/breakout.html")}>
+    <button onClick={() => setGame("breakout")}>
       Breakout
     </button>
-    <button onClick={() => setCurrentGame("/Games/Breakout2/breakout2.html")}>
+    <button onClick={() => setGame("breakout2")}>
       Breakout2
     </button>
-    <h2>Current game: {currentGame}</h2>
+    <h2>{gameName}</h2>
     </div>
   );
 }
