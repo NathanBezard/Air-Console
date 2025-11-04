@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import GameContainer from './components/Games.js';
-import QRCodeComponent from './components/Qrcode.js';
-import socket from "./socket.js";
+import GameContainer from '../components/Games.js';
+import QRCodeComponent from '../components/Qrcode.js';
+import socket from "../socket.js";
 
 function Console() {
   const [messages, setMessages] = useState([]);

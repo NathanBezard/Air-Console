@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import socket from "./socket";
+import socket from "../socket";
 
 function Controller() {
   const [playerId, setPlayerId] = useState(null);
