@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/NathanBezard/Air-Console#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "ip": "^2.0.1",
     "react": "^18.2.0",

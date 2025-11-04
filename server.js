@@ -2,8 +2,12 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const ip = require("ip");
+const cors = require("cors");
 
 const app = express();
+
+app.use(cors());
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "*" },
@@ -51,7 +55,6 @@ app.get("/api/ip", (req, res) => {
   res.json({ ip: serverIP });
 });
 
-
-server.listen(4000, () => {
+server.listen(4000, '0.0.0.0', () => {
   console.log(`✅ Server running on http://${serverIP}:4000`);
 });

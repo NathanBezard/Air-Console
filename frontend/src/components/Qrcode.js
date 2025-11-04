@@ -7,7 +7,7 @@ const QRCodeComponent = () => {
   useEffect(() => {
     // Build the URL dynamically based on where the frontend is running
     const backendURL = `http://${window.location.hostname}:4000/api/ip`;
-
+    console.log("🌐 Fetching IP from backend at:", backendURL);
     fetch(backendURL)
       .then(res => res.json())
       .then(data => {
@@ -22,13 +22,12 @@ const QRCodeComponent = () => {
 
   if (!ip) return <p>Loading QR...</p>;
 
-  const controllerURL = `http://10.84.106.233:3000/Controller`;
+  const controllerURL = `http://${ip}:3000/Controller`;
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>Scan to open Controller</h2>
       <QRCodeSVG value={controllerURL} size={200} />
-      <p>{controllerURL}</p>
     </div>
   );
 };
