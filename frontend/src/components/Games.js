@@ -27,6 +27,10 @@ function GameContainer() {
   
   return (
     <div>
+    <h2
+      className="text">
+      {gameName}
+    </h2>
     <iframe
       ref={iframeRef}
       src={currentGame}
@@ -35,17 +39,23 @@ function GameContainer() {
       title="test Embed"
     />
     <div>
-    <button onClick={() => setGame("breakout")}>
-      Breakout
+    <button onClick={() => setGame("breakout")}
+      className="button">
+      <img
+        src="/image/breakout_icon.png"
+        alt="Breakout Icon"
+        className="icon"
+      />
     </button>
-    <button onClick={() => setGame("breakout2")}>
-      Breakout2
+    <button onClick={() => setGame("breakout2")}
+     className="button">
+      <img
+        src="/image/breakout2_icon.png"
+        alt="Breakout Icon"
+        className="icon"
+      />
     </button>
     </div>
-    <h2
-      className="text">
-      {gameName}
-    </h2>
     </div>
   );
 }

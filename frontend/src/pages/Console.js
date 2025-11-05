@@ -38,9 +38,6 @@ function Console() {
         padding: "10px",
         borderRadius: "8px",
         listStyle: "none",
-        maxHeight: "300px",
-        overflowY: "auto",
-        fontFamily: "monospace",
         width: "80%",
         height: "300px",
       }}>

@@ -5,10 +5,11 @@ import Controller from "./pages/Controller";
 
 function App() {
   return (
-    <div>
-      <nav>
+    <div
+      className="app-container">
+      {/*<nav>
         <Link to="/">Console</Link> | <Link to="/controller">Controller</Link>
-      </nav>
+      </nav>*/}
 
       <Routes>
         <Route path="/" element={<Console />} />

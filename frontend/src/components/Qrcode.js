@@ -26,7 +26,7 @@ const QRCodeComponent = () => {
   const controllerURL = `http://${ip}:3000/Controller`;
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
+    <div style={{ textAlign: "center", marginTop: "10px" }}>
       <h2
         className="text">
         Scan to open Controller
