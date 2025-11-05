@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import socket from "../socket.js";
+import './Game.css';
+
 
 function GameContainer() {
   const [currentGame, setCurrentGame] = useState("/Games/Breakout/breakout.html");
@@ -32,13 +34,18 @@ function GameContainer() {
       height="400"
       title="test Embed"
     />
+    <div>
     <button onClick={() => setGame("breakout")}>
       Breakout
     </button>
     <button onClick={() => setGame("breakout2")}>
       Breakout2
     </button>
-    <h2>{gameName}</h2>
+    </div>
+    <h2
+      className="text">
+      {gameName}
+    </h2>
     </div>
   );
 }

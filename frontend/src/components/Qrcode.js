@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import './Qrcode.css';
 
 const QRCodeComponent = () => {
   const [ip, setIp] = useState("");
@@ -26,7 +27,10 @@ const QRCodeComponent = () => {
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Scan to open Controller</h2>
+      <h2
+        className="text">
+        Scan to open Controller
+      </h2>
       <QRCodeSVG value={controllerURL} size={200} />
     </div>
   );

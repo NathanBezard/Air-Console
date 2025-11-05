@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import GameContainer from '../components/Games.js';
 import QRCodeComponent from '../components/Qrcode.js';
 import socket from "../socket.js";
+import './Console.css';
 
 function Console() {
   const [messages, setMessages] = useState([]);
@@ -18,24 +19,30 @@ function Console() {
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Console</h1>
+    <div className="console-container">
+      <h1 className="title">Natendo</h1>
 
       <div>
         <GameContainer />
         <QRCodeComponent />
       </div>
 
-      <h2>Debug Console:</h2>
+      <h2
+        style={{
+          color: "#AA0000"}}>
+          Debug Console:
+      </h2>
       <ul style={{
         backgroundColor: "#111",
-        color: "#FFF",
+        color: "#AA0000",
         padding: "10px",
         borderRadius: "8px",
         listStyle: "none",
         maxHeight: "300px",
         overflowY: "auto",
-        fontFamily: "monospace"
+        fontFamily: "monospace",
+        width: "80%",
+        height: "300px",
       }}>
         {messages.map((m, i) => (
           <li key={i}>

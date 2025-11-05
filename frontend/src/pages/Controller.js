@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import socket from "../socket";
+import './Controller.css';
 
 function Controller() {
   const [playerId, setPlayerId] = useState(null);
@@ -30,8 +31,11 @@ function Controller() {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <h1>Controller #{playerId ?? "Connecting..."}</h1>
+    <div className="controller-container">
+      <h1
+        className="text">
+        Controller #{playerId ?? "Connecting..."}
+      </h1>
       <button
         onContextMenu={(e) => e.preventDefault()}
         onMouseDown={() => startMoving("left")}
@@ -42,6 +46,7 @@ function Controller() {
         >
         <img 
           src="image/arrow_up.png" 
+          alt="up"
           width="150"
           height="150"
         />
@@ -57,6 +62,7 @@ function Controller() {
         >
         <img 
           src="image/arrow_left.png"
+          alt="left"
           width="150"
           height="150"/>
         </button>
@@ -70,6 +76,7 @@ function Controller() {
           >
           <img 
             src="image/arrow_right.png"
+            alt="right"
             width="150"
             height="150"/>
         </button>
@@ -84,6 +91,7 @@ function Controller() {
       >
         <img 
           src="image/arrow_down.png"
+          alt="down"
           width="150"
           height="150"/>
       </button>
