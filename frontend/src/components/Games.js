@@ -55,6 +55,14 @@ function GameContainer() {
         className="icon"
       />
     </button>
+    <button onClick={() => setGame("tetris")}
+     className="button">
+      <img
+        src="/image/tetris_icon.png"
+        alt="Tetris Icon"
+        className="icon"
+      />
+    </button>
     </div>
     </div>
   );
