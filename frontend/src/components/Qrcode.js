@@ -31,7 +31,9 @@ const QRCodeComponent = () => {
         className="text">
         Scan to open Controller
       </h2>
-      <QRCodeSVG value={controllerURL} size={200} />
+      <QRCodeSVG
+       className="qr-container"
+       value={controllerURL} size={200} />
     </div>
   );
 };

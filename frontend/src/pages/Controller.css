@@ -1,18 +1,75 @@
-@import url('../style/colors.css');
-
 .controller-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-    background-color: var(--background);
+    justify-content: center;
     height: 100vh;
-}
-
-.text {
-    font-weight: bold;
-    margin-bottom: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    align-self: center;
-    color: var(--text);
-}
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+  }
+  
+  .text {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .controller-container button {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+  
+  .controller-container button:active {
+    transform: scale(0.9);
+  }
+  
+  .controller-container img {
+    width: 120px;
+    height: 120px;
+    user-select: none;
+  }
+  
+  .controller-container div {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+  }
+  
+  /* Portrait mode — keep normal vertical layout */
+  @media (orientation: portrait) {
+    .controller-container {
+      flex-direction: column;
+    }
+  
+    .controller-container div {
+      display: flex;
+    }
+  
+    .controller-container button {
+      display: block;
+    }
+  }
+  
+  /* Landscape mode — horizontal layout */
+  @media (orientation: landscape) {
+    .controller-container {
+      flex-direction: row;
+      justify-content: space-evenly;
+    }
+  
+    .controller-container div {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .text-c {
+      position: absolute;
+      font-size: large;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }

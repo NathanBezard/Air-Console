@@ -4,6 +4,35 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    font-family: 'Press Start 2P', monospace;
+  }
+  
+  .title {
+    color: #AA0000;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px #550000;
+  }
+  
+  .console-container h2 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  
+  .console-container ul {
+    overflow-y: auto;
+    font-size: 0.9rem;
+  }
+
+/*
+.console-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
     background-color: var(--background);
     height: 100vh;
@@ -19,3 +48,4 @@
     align-self: center;
     color: var(--text);
 }
+*/

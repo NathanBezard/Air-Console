@@ -5,6 +5,7 @@ import './Controller.css';
 function Controller() {
   const [playerId, setPlayerId] = useState(null);
   const intervalRef = useRef(null);
+  const [currentDir, setCurrentDir] = useState(null);
 
   useEffect(() => {
     socket.on("assign-id", (id) => {
@@ -22,19 +23,26 @@ function Controller() {
   };
 
   const startMoving = (dir) => {
+    if (currentDir === dir) return;
+    setCurrentDir(dir);
+    stopMoving();
     sendDirection(dir);
     intervalRef.current = setInterval(() => sendDirection(dir), 100);
   };
-
+  
   const stopMoving = () => {
-    clearInterval(intervalRef.current);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setCurrentDir(null);
   };
 
   return (
     <div className="controller-container">
       <h1
-        className="text">
-        Controller #{playerId ?? "Connecting..."}
+        className="text-c">
+        Player {playerId ?? "Connecting..."}
       </h1>
       <button
         onContextMenu={(e) => e.preventDefault()}
@@ -45,8 +53,8 @@ function Controller() {
         onTouchEnd={stopMoving}
         >
         <img 
-          src="image/arrow_up.png" 
-          alt="up"
+          src="image/arrow_left.png" 
+          alt="left"
           width="150"
           height="150"
         />
@@ -54,29 +62,29 @@ function Controller() {
       <div>
         <button
           onContextMenu={(e) => e.preventDefault()}
-          onMouseDown={() => startMoving("down")}
-          onMouseUp={stopMoving}
-          onMouseLeave={stopMoving}
-          onTouchStart={(e) => { e.preventDefault(); startMoving("down"); }}
-          onTouchEnd={stopMoving}
-        >
-        <img 
-          src="image/arrow_left.png"
-          alt="left"
-          width="150"
-          height="150"/>
-        </button>
-        <button
-          onContextMenu={(e) => e.preventDefault()}
           onMouseDown={() => startMoving("up")}
           onMouseUp={stopMoving}
           onMouseLeave={stopMoving}
           onTouchStart={(e) => { e.preventDefault(); startMoving("up"); }}
           onTouchEnd={stopMoving}
+        >
+        <img 
+          src="image/arrow_up.png"
+          alt="up"
+          width="150"
+          height="150"/>
+        </button>
+        <button
+          onContextMenu={(e) => e.preventDefault()}
+          onMouseDown={() => startMoving("down")}
+          onMouseUp={stopMoving}
+          onMouseLeave={stopMoving}
+          onTouchStart={(e) => { e.preventDefault(); startMoving("down"); }}
+          onTouchEnd={stopMoving}
           >
           <img 
-            src="image/arrow_right.png"
-            alt="right"
+            src="image/arrow_down.png"
+            alt="down"
             width="150"
             height="150"/>
         </button>
@@ -90,8 +98,8 @@ function Controller() {
         onTouchEnd={stopMoving}
       >
         <img 
-          src="image/arrow_down.png"
-          alt="down"
+          src="image/arrow_right.png"
+          alt="right"
           width="150"
           height="150"/>
       </button>

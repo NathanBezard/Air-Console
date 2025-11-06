@@ -29,12 +29,12 @@ function Console() {
 
       <h2
         style={{
-          color: "#AA0000"}}>
+          color: "#00FF00"}}>
           Debug Console:
       </h2>
       <ul style={{
         backgroundColor: "#111",
-        color: "#AA0000",
+        color: "#00FF00",
         padding: "10px",
         borderRadius: "8px",
         listStyle: "none",
