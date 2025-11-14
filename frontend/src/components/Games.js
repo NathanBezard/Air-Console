@@ -26,9 +26,9 @@ function GameContainer() {
   };
   
   return (
-    <div>
-    <h2
-      className="text">
+<div className="game-container">
+  <div className="iframe-container">
+    <h2 className="game-title">
       {gameName}
     </h2>
     <iframe
@@ -38,33 +38,25 @@ function GameContainer() {
       height="400"
       title="test Embed"
     />
-    <div>
-    <button onClick={() => setGame("breakout")}
-      className="button">
+  </div>
+  
+  <div className="button-container">
+    <button onClick={() => setGame("breakout")} className="button">
       <img
         src="/image/breakout_icon.png"
         alt="Breakout Icon"
         className="icon"
       />
     </button>
-    <button onClick={() => setGame("breakout2")}
-     className="button">
-      <img
-        src="/image/breakout2_icon.png"
-        alt="Breakout Icon"
-        className="icon"
-      />
-    </button>
-    <button onClick={() => setGame("tetris")}
-     className="button">
+    <button onClick={() => setGame("tetris")} className="button">
       <img
         src="/image/tetris_icon.png"
         alt="Tetris Icon"
         className="icon"
       />
     </button>
-    </div>
-    </div>
+  </div>
+</div>
   );
 }
 

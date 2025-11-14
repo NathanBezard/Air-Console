@@ -26,15 +26,12 @@ const QRCodeComponent = () => {
   const controllerURL = `http://${ip}:3000/Controller`;
 
   return (
-    <div style={{ textAlign: "center", marginTop: "10px" }}>
-      <h2
-        className="text">
-        Scan to open Controller
-      </h2>
-      <QRCodeSVG
-       className="qr-container"
-       value={controllerURL} size={200} />
-    </div>
+<div className="qr-container">
+  <h2 className="qr-title">
+    Scan to open Controller
+  </h2>
+  <QRCodeSVG value={controllerURL} size={200} />
+</div>
   );
 };
 

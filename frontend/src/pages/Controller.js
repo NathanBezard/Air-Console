@@ -39,11 +39,10 @@ function Controller() {
   };
 
   return (
-    <div className="controller-container">
-      <h1
-        className="text-c">
-        Player {playerId ?? "Connecting..."}
-      </h1>
+<div className="controller-container">
+  <h1 className="controller-title">
+    Controller #{playerId ?? "Connecting..."}
+  </h1>
       <button
         onContextMenu={(e) => e.preventDefault()}
         onMouseDown={() => startMoving("left")}

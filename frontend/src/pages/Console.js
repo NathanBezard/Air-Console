@@ -20,38 +20,26 @@ function Console() {
 
   return (
     <div className="console-container">
-      <h1 className="title">Natendo</h1>
+  <h1 className="title">Natendo</h1>
 
-      <div>
-        <GameContainer />
-        <QRCodeComponent />
-      </div>
+  <div>
+    <GameContainer />
+    <QRCodeComponent />
+  </div>
 
-      <h2
-        style={{
-          color: "#00FF00"}}>
-          Debug Console:
-      </h2>
-      <ul style={{
-        backgroundColor: "#111",
-        color: "#00FF00",
-        padding: "10px",
-        borderRadius: "8px",
-        listStyle: "none",
-        width: "80%",
-        height: "300px",
-      }}>
-        {messages.map((m, i) => (
-          <li key={i}>
-            {m.id ? (
-              <>Player <strong>{m.id}</strong>: {m.message}</>
-            ) : (
-              <>{m}</>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+  <h2>Debug Console:</h2>
+  <ul>
+    {messages.map((m, i) => (
+      <li key={i}>
+        {m.id ? (
+          <>Player <strong>{m.id}</strong>: {m.message}</>
+        ) : (
+          <>{m}</>
+        )}
+      </li>
+    ))}
+  </ul>
+</div>
   );
 }
 

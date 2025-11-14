@@ -1,51 +1,145 @@
 @import url('../style/colors.css');
 
 .console-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #000;
-    color: #fff;
-    min-height: 100vh;
-    font-family: 'Press Start 2P', monospace;
-  }
-  
-  .title {
-    color: #AA0000;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px #550000;
-  }
-  
-  .console-container h2 {
-    margin-top: 30px;
-    margin-bottom: 10px;
-  }
-  
-  .console-container ul {
-    overflow-y: auto;
-    font-size: 0.9rem;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 100%);
+  color: #fff;
+  min-height: 100vh;
+  font-family: 'Press Start 2P', monospace;
+  padding: 40px 20px;
+  position: relative;
+  overflow-x: hidden;
+}
 
-/*
-.console-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: var(--background);
-    height: 100vh;
-    box-sizing: border-box;
+.console-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 3px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.console-container > * {
+  position: relative;
+  z-index: 2;
 }
 
 .title {
-    font-size: 48px;
-    font-weight: bold;
-    font-style: italic;
-    margin-bottom: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    align-self: center;
-    color: var(--text);
+  color: #FF0040;
+  font-size: 3rem;
+  margin-bottom: 40px;
+  text-shadow: 
+    4px 4px 0px #660019,
+    0 0 20px rgba(255, 0, 64, 0.5);
+  letter-spacing: 2px;
+  animation: glow 2s ease-in-out infinite alternate;
 }
-*/
+
+@keyframes glow {
+  from {
+    text-shadow: 
+      4px 4px 0px #660019,
+      0 0 20px rgba(255, 0, 64, 0.5);
+  }
+  to {
+    text-shadow: 
+      4px 4px 0px #660019,
+      0 0 30px rgba(255, 0, 64, 0.8);
+  }
+}
+
+.console-container > div:first-of-type {
+  display: flex;
+  gap: 60px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.console-container h2 {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  color: #FF0040;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.console-container ul {
+  overflow-y: auto;
+  font-size: 0.75rem;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a0505 100%);
+  border: 3px solid #FF0040;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 
+    0 0 20px rgba(255, 0, 64, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.5);
+  max-width: 90%;
+  width: 800px;
+  height: 300px;
+  list-style: none;
+  line-height: 1.8;
+}
+
+.console-container ul li {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 0, 64, 0.1);
+}
+
+.console-container ul li:last-child {
+  border-bottom: none;
+}
+
+.console-container ul strong {
+  color: #FFD700;
+}
+
+/* Scrollbar styling */
+.console-container ul::-webkit-scrollbar {
+  width: 8px;
+}
+
+.console-container ul::-webkit-scrollbar-track {
+  background: #0a0a0a;
+  border-radius: 4px;
+}
+
+.console-container ul::-webkit-scrollbar-thumb {
+  background: #FF0040;
+  border-radius: 4px;
+}
+
+.console-container ul::-webkit-scrollbar-thumb:hover {
+  background: #ff3366;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+  
+  .console-container > div:first-of-type {
+    gap: 30px;
+  }
+  
+  .console-container ul {
+    width: 95%;
+    font-size: 0.65rem;
+  }
+}
