@@ -6,6 +6,7 @@ function Controller() {
   const [playerId, setPlayerId] = useState(null);
   const intervalRef = useRef(null);
   const [currentDir, setCurrentDir] = useState(null);
+  //const [input, setInput] = useState("");
 
   useEffect(() => {
     socket.on("assign-id", (id) => {
@@ -111,8 +112,8 @@ export default Controller;
 
 
 //<input
-//          value={input}
-//          onChange={(e) => setInput(e.target.value)}
-//          placeholder="Type a command"
-//        />
-//        <button onClick={sendMessage}>Send</button>
+//value={input}
+//onChange={(e) => setInput(e.target.value)}
+//placeholder="Type a command"
+///>
+//<button onClick={sendDirection(input)}>Send</button>

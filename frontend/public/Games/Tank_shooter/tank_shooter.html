@@ -1,0 +1,306 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tank shooter</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      canvas {
+        background: #3b3b3b;
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="595" height="395"></canvas>
+
+    <script>
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+
+      class Tank {
+        constructor(id, x, y, color) {
+          this.id = id;
+          this.x = x;
+          this.y = y;
+          this.angle = 0;
+          this.color = color;
+          this.width = 30;
+          this.height = 30;
+          this.speed = 4;
+          this.turretAngle = 0;
+          this.health = 100;
+          this.maxHealth = 100;
+        }
+
+        draw(ctx) {
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.angle);
+          
+          ctx.fillStyle = this.color;
+          ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+          
+          ctx.fillStyle = this.darkenColor(this.color);
+          ctx.fillRect(-8, -8, 16, 16);
+          
+          ctx.fillRect(0, -4, this.width / 2 + 5, 8);
+
+          ctx.restore();
+
+          this.drawHealthBar(ctx);
+        }
+
+        drawHealthBar(ctx) {
+          const barWidth = 40;
+          const barHeight = 5;
+          const x = this.x - barWidth/2;
+          const y = this.y - this.height/2 - 10;
+
+          ctx.fillStyle = '#ff0000';
+          ctx.fillRect(x, y, barWidth, barHeight);
+
+          ctx.fillStyle = '#00ff00';
+          ctx.fillRect(x, y, barWidth * (this.health / this.maxHealth), barHeight);
+        }
+
+        darkenColor(color) {
+          const num = parseInt(color.slice(1),16),
+                amt = Math.round(2.55 * -20),
+                R = (num >> 16) + amt,
+                G = (num >> 8 & 0x00FF) + amt,
+                B = (num & 0x0000FF) + amt;
+          return "#" + (0x1000000 + 
+            (R<255?R<1?0:R:255)*0x10000 + 
+            (G<255?G<1?0:G:255)*0x100 + 
+            (B<255?B<1?0:B:255))
+            .toString(16).slice(1);
+        }
+
+        moveForward() {
+          this.x += this.speed * Math.cos(this.angle);
+          this.y += this.speed * Math.sin(this.angle);
+          this.keepInBounds();
+        }
+
+        moveBackward() {
+          this.x -= this.speed * Math.cos(this.angle);
+          this.y -= this.speed * Math.sin(this.angle);
+          this.keepInBounds();
+        }
+
+        rotateLeft() {
+          this.angle -= 0.2;
+        }
+
+        rotateRight() {
+          this.angle += 0.2;
+        }
+
+        keepInBounds() {
+          if (this.x < 15) this.x = 15;
+          if (this.x > canvas.width - 15) this.x = canvas.width - 15;
+          if (this.y < 15) this.y = 15;
+          if (this.y > canvas.height - 15) this.y = canvas.height - 15;
+        }
+
+        takeDamage(amount) {
+          this.health -= amount;
+          if (this.health < 0) this.health = 0;
+        }
+
+        isDead() {
+          return this.health <= 0;
+        }
+      }
+
+      class Bullet {
+        constructor(x, y, angle, ownerId) {
+          this.x = x;
+          this.y = y;
+          this.angle = angle;
+          this.ownerId = ownerId;
+          this.speed = 5;
+          this.radius = 3;
+          this.active = true;
+        }
+
+        update() {
+          this.x += this.speed * Math.cos(this.angle);
+          this.y += this.speed * Math.sin(this.angle);
+
+          if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            this.active = false;
+          }
+        }
+
+        draw(ctx) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = "#ffff00";
+          ctx.fill();
+          ctx.closePath();
+        }
+
+        checkCollision(tank) {
+          if (tank.id === this.ownerId || !tank.isDead) return false;
+
+          const dx = this.x - tank.x;
+          const dy = this.y - tank.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          return distance < (tank.width / 2 + this.radius);
+        }
+      }
+
+      const tanks = {};
+      const bullets = [];
+      let lastShootTime = {};
+
+      const obstacles = [
+        {x: 200, y: 150, width: 50, height: 50},
+        {x: 350, y: 250, width: 60, height: 40},
+        // Add more obstacles
+      ];
+
+
+      function createTank(playerId) {
+        const colors = ['#0095DD', '#FF6D2D', '#00DD00', '#DD00DD'];
+        const spawnPoints =  [
+            {x: 100, y: 100},
+            {x: 495, y: 100},
+            {x: 100, y: 295},
+            {x: 495, y: 295}
+        ];
+      
+        const colorIndex = Object.keys(tanks).length % colors.length;
+        const spawnIndex = Object.keys(tanks).length % spawnPoints.length;
+      
+        tanks[playerId] = new Tank(
+          playerId,
+          spawnPoints[spawnIndex].x,
+          spawnPoints[spawnIndex].y,
+          colors[colorIndex]
+        );
+
+        lastShootTime[playerId] = 0;
+      }
+
+
+      window.addEventListener("message", (event) => {
+        if (!event.data || !event.data.type) return;
+        const command = event.data.type;
+        const now = Date.now();
+
+        const parts = command.split(" ");
+        if (parts.length !== 2) return;
+
+        const playerId = parseInt(parts[0]);
+        const direction = parts[1];
+
+        if (!tanks[playerId]) {
+          createTank(playerId);
+        }
+
+        const tank = tanks[playerId];
+        if (tank.isDead()) return;
+
+        if (direction === "left") {
+          tank.rotateLeft();
+        } else if (direction === "right") {
+          tank.rotateRight();
+        } else if (direction === "up") {
+          tank.moveForward();
+        } else if (direction === "down") {
+          if (now - lastShootTime[playerId] > 300) {
+            shoot(tank);
+            lastShootTime[playerId] = now;
+          }
+        }
+      });
+
+      function shoot(tank) {
+        const bulletX = tank.x + Math.cos(tank.angle) * 20;
+        const bulletY = tank.y + Math.sin(tank.angle) * 20;
+
+        bullets.push(new Bullet(bulletX, bulletY, tank.angle, tank.id));
+      }
+
+      function update() {
+        bullets.forEach(bullet => bullet.update());
+
+        bullets.forEach(bullet => {
+          Object.values(tanks).forEach(tank => {
+            if (bullet.active && bullet.checkCollision(tank)) {
+              tank.takeDamage(25);
+              bullet.active = false;
+            }
+          })
+        })
+
+        for (let i = bullets.length -1; i >= 0; i--) {
+          if (!bullets[i].active) {
+            bullets.splice(i, 1);
+          }
+        }
+
+        Object.values(tanks).forEach(tank => {
+          checkObstacleCollision(tank);
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        Object.values(tanks).forEach(tank => {
+          if (!tank.isDead()) {
+            tank.draw(ctx);
+          }
+        })
+        
+        bullets.forEach(bullet => bullet.draw(ctx));
+
+        drawScores();
+
+        drawObstacles();
+        
+        update();
+        requestAnimationFrame(draw);
+      }
+      
+      function drawScores() {
+        ctx.font = "14px Arial";
+        ctx.fillStyle = "#ffffff";
+        let y = 20;
+        Object.values(tanks).forEach(tank => {
+          ctx.fillText(`Player ${tank.id}: ${tank.health} HP`, 10, y);
+          y += 20;
+        });
+      }
+
+      function drawObstacles() {
+        ctx.fillStyle = "#8B4513";
+        obstacles.forEach(obs => {
+          ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        });
+      }
+
+      function checkObstacleCollision(tank) {
+        obstacles.forEach(obs => {
+          if (tank.x > obs.x - tank.width/2 && 
+              tank.x < obs.x + obs.width + tank.width/2 &&
+              tank.y > obs.y - tank.height/2 && 
+              tank.y < obs.y + obs.height + tank.height/2) {
+                tank.moveBackward();
+          }
+        });
+      }
+
+      draw();
+    </script>
+  </body>
+</html>

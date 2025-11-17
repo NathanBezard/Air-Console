@@ -4,8 +4,8 @@ import './Game.css';
 
 
 function GameContainer() {
-  const [currentGame, setCurrentGame] = useState("/Games/Breakout/breakout.html");
-  const [gameName, setGameName] = useState("Breakout");
+  const [currentGame, setCurrentGame] = useState("/Games/Tank_shooter/tank_shooter.html");
+  const [gameName, setGameName] = useState("Tank Shooter");
   const iframeRef = useRef(null);
 
   useEffect(() => {
@@ -20,9 +20,11 @@ function GameContainer() {
   }, []);
 
   const setGame = (nameGame) => {
-    const nameDir = nameGame.charAt(0).toUpperCase() + nameGame.slice(1);
+    var nameDir = nameGame.charAt(0).toUpperCase() + nameGame.slice(1);
     setGameName(nameDir);
     setCurrentGame(`/Games/${nameDir}/${nameGame}.html`);
+    var cleanName = nameDir.replace("_", " ");
+    setGameName(cleanName);
   };
   
   return (
@@ -52,6 +54,13 @@ function GameContainer() {
       <img
         src="/image/tetris_icon.png"
         alt="Tetris Icon"
+        className="icon"
+      />
+    </button>
+    <button onClick={() => setGame("tank_shooter")} className="button">
+      <img
+        src="/image/tank_icon.png"
+        alt="Tank Icon"
         className="icon"
       />
     </button>
