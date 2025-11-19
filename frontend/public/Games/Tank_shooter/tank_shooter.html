@@ -251,6 +251,10 @@
         Object.values(tanks).forEach(tank => {
           checkObstacleCollision(tank);
         });
+
+        Object.values(bullets).forEach(bullet => {
+          checkObstaclesBullet(bullet);
+        })
       }
 
       function draw() {
@@ -296,6 +300,17 @@
               tank.y > obs.y - tank.height/2 && 
               tank.y < obs.y + obs.height + tank.height/2) {
                 tank.moveBackward();
+          }
+        });
+      }
+
+      function checkObstaclesBullet(bullet) {
+        obstacles.forEach(obs => {
+          if (bullet.x > obs.x - bullet.radius &&
+              bullet.x < obs.x + obs.width + bullet.radius &&
+              bullet.y > obs.y - bullet.radius &&
+              bullet.y < obs.y + obs.height + bullet.radius) {
+              bullet.active = false;
           }
         });
       }
