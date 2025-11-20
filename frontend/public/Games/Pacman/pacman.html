@@ -1,0 +1,493 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Pac-Man Game</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      canvas {
+        background: #000;
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="595" height="395"></canvas>
+
+    <script>
+      const canvas = document.getElementById("myCanvas");
+      const ctx = canvas.getContext("2d");
+      
+      const TILE_SIZE = 19;
+      const COLS = 31;
+      const ROWS = 21;
+      
+      // Game state
+      let score = 0;
+      let lives = 3;
+      let gameOver = false;
+      let pelletsRemaining = 0;
+      let powerPelletActive = false;
+      let powerPelletTimer = 0;
+      
+      // Map: 1 = wall, 0 = empty, 2 = pellet, 3 = power pellet
+      const map = [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,3,2,2,1],
+        [1,2,1,1,1,2,1,1,1,1,1,2,1,1,2,1,2,1,1,2,1,1,1,1,1,2,1,1,1,2,1],
+        [1,3,1,0,1,2,1,0,0,0,1,2,1,0,2,1,2,0,1,2,1,0,0,0,1,2,1,0,1,2,1],
+        [1,2,1,1,1,2,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,2,1,1,1,2,1],
+        [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+        [1,2,1,1,1,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,1,1,1,2,1],
+        [1,2,2,2,2,2,1,2,2,2,2,2,2,2,1,1,1,2,2,2,2,2,2,2,1,2,2,2,2,2,1],
+        [1,1,1,1,1,2,1,1,1,1,1,0,0,2,1,1,1,2,0,0,1,1,1,1,1,2,1,1,1,1,1],
+        [0,0,0,0,1,2,1,0,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,1,2,1,0,0,0,0],
+        [1,1,1,1,1,2,1,0,1,1,0,0,1,1,1,0,1,1,1,0,0,1,1,0,1,2,1,1,1,1,1],
+        [1,0,0,0,0,2,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,0,0,0,0,1],
+        [1,1,1,1,1,2,1,0,1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,0,1,2,1,1,1,1,1],
+        [0,0,0,0,1,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,1,0,0,0,0],
+        [1,1,1,1,1,2,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,2,1,1,1,1,1],
+        [1,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1],
+        [1,2,1,1,1,2,1,1,1,1,1,2,1,0,0,0,0,0,1,2,1,1,1,1,1,2,1,1,1,2,1],
+        [1,2,2,2,1,2,2,2,2,2,2,2,1,0,0,0,0,0,1,2,2,2,2,2,2,2,1,2,3,2,1],
+        [1,1,1,2,1,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,1,2,1,1,1],
+        [1,2,2,3,2,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+      ];
+      
+      // Count pellets
+      for (let row of map) {
+        for (let cell of row) {
+          if (cell === 2) pelletsRemaining++;
+        }
+      }
+      
+      // Pac-Man
+      const pacman = {
+        x: 15,
+        y: 19,
+        direction: 0, // 0=right, 1=down, 2=left, 3=up
+        nextDirection: 0,
+        mouthOpen: 0,
+        speed: 0.12,
+        moving: false
+      };
+      
+      // Ghosts
+      const ghosts = [
+        { x: 16, y: 11, color: '#FF0000', direction: 0, startX: 16, startY: 11, inCage: false, cageTimer: 0 }, // Red
+        { x: 15, y: 11, color: '#FFB8FF', direction: 2, startX: 15, startY: 11, inCage: false, cageTimer: 0 }, // Pink
+        { x: 14, y: 11, color: '#00FFFF', direction: 1, startX: 14, startY: 11, inCage: false, cageTimer: 0 }, // Cyan
+        { x: 17, y: 11, color: '#FFB852', direction: 3, startX: 17, startY: 11, inCage: false, cageTimer: 0 }  // Orange
+      ];
+      
+      let lastMoveTime = 0;
+      let lastDirectionTime = 0;
+      
+      window.addEventListener("message", (event) => {
+        if (!event.data || !event.data.type || gameOver) return;
+        const command = event.data.type;
+        const now = Date.now();
+        
+        const parts = command.split(" ");
+        if (parts.length !== 2) return;
+
+        const direction = parts[1];
+
+        if (now - lastDirectionTime < 100) return;
+        lastDirectionTime = now;
+        
+        if (direction === "left") {
+          pacman.nextDirection = 2;
+        } else if (direction === "right") {
+          pacman.nextDirection = 0;
+        } else if (direction === "up") {
+          pacman.nextDirection = 3;
+        } else if (direction === "down") {
+          pacman.nextDirection = 1;
+        }
+      });
+      
+      function canMove(x, y) {
+        const col = Math.round(x);
+        const row = Math.round(y);
+        
+        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return false;
+        return map[row][col] !== 1;
+      }
+      
+      function isAligned(pos) {
+        return Math.abs(pos - Math.round(pos)) < 0.1;
+      }
+      
+      function movePacman() {
+        // Always try to change direction if aligned and new direction is valid
+        if (isAligned(pacman.x) && isAligned(pacman.y)) {
+          const dirs = [
+            {dx: 1, dy: 0},   // right
+            {dx: 0, dy: 1},   // down
+            {dx: -1, dy: 0},  // left
+            {dx: 0, dy: -1}   // up
+          ];
+          
+          const nextDir = dirs[pacman.nextDirection];
+          const testX = Math.round(pacman.x) + nextDir.dx;
+          const testY = Math.round(pacman.y) + nextDir.dy;
+          
+          if (canMove(testX, testY)) {
+            pacman.direction = pacman.nextDirection;
+            // Snap to grid when changing direction
+            pacman.x = Math.round(pacman.x);
+            pacman.y = Math.round(pacman.y);
+          }
+        }
+        
+        // Move in current direction
+        const dirs = [
+          {dx: 1, dy: 0},   // right
+          {dx: 0, dy: 1},   // down
+          {dx: -1, dy: 0},  // left
+          {dx: 0, dy: -1}   // up
+        ];
+        
+        const dir = dirs[pacman.direction];
+        const newX = pacman.x + dir.dx * pacman.speed;
+        const newY = pacman.y + dir.dy * pacman.speed;
+        
+        if (canMove(newX, newY)) {
+          pacman.x = newX;
+          pacman.y = newY;
+          
+          // Wrap around
+          if (pacman.x < 0) pacman.x = COLS - 1;
+          if (pacman.x >= COLS) pacman.x = 0;
+        } else {
+          // If blocked, try to align to grid to make turning easier
+          if (dir.dx !== 0) {
+            pacman.x = Math.round(pacman.x);
+          }
+          if (dir.dy !== 0) {
+            pacman.y = Math.round(pacman.y);
+          }
+        }
+        
+        // Eat pellets
+        const col = Math.round(pacman.x);
+        const row = Math.round(pacman.y);
+        
+        if (map[row][col] === 2) {
+          map[row][col] = 0;
+          score += 10;
+          pelletsRemaining--;
+          
+          if (pelletsRemaining === 0) {
+            // Level complete
+            setTimeout(() => document.location.reload(), 2000);
+          }
+        } else if (map[row][col] === 3) {
+          map[row][col] = 0;
+          score += 50;
+          powerPelletActive = true;
+          powerPelletTimer = 200; // ~6 seconds at 30fps
+        }
+      }
+      
+      function moveGhost(ghost) {
+        // If in cage, wait and then move to exit
+        if (ghost.inCage) {
+          ghost.cageTimer--;
+          if (ghost.cageTimer <= 0) {
+            // Move towards cage exit (15, 9)
+            if (Math.abs(ghost.x - 15) > 0.1) {
+              ghost.x += (ghost.x < 15) ? 0.05 : -0.05;
+              return;
+            }
+            if (Math.abs(ghost.y - 9) > 0.1) {
+              ghost.y -= 0.05;
+              return;
+            }
+            // Exited cage
+            ghost.inCage = false;
+            ghost.x = 15;
+            ghost.y = 9;
+          }
+          return;
+        }
+        
+        if (isAligned(ghost.x) && isAligned(ghost.y)) {
+          const possibleDirs = [];
+          const dirs = [
+            {dx: 1, dy: 0, dir: 0},
+            {dx: 0, dy: 1, dir: 1},
+            {dx: -1, dy: 0, dir: 2},
+            {dx: 0, dy: -1, dir: 3}
+          ];
+          
+          for (let d of dirs) {
+            const testX = Math.round(ghost.x) + d.dx;
+            const testY = Math.round(ghost.y) + d.dy;
+            
+            // Don't reverse direction unless stuck
+            if (d.dir === (ghost.direction + 2) % 4 && possibleDirs.length === 0) {
+              // Allow reversing if no other option
+            } else if (d.dir === (ghost.direction + 2) % 4) {
+              continue;
+            }
+            
+            if (canMove(testX, testY)) {
+              possibleDirs.push(d);
+            }
+          }
+          
+          // If stuck (dead end), allow reversing
+          if (possibleDirs.length === 0) {
+            const reverseDir = (ghost.direction + 2) % 4;
+            const d = dirs[reverseDir];
+            const testX = Math.round(ghost.x) + d.dx;
+            const testY = Math.round(ghost.y) + d.dy;
+            if (canMove(testX, testY)) {
+              possibleDirs.push(d);
+            }
+          }
+          
+          if (possibleDirs.length > 0) {
+            if (powerPelletActive) {
+              // Run away from Pac-Man
+              const pacCol = Math.round(pacman.x);
+              const pacRow = Math.round(pacman.y);
+              
+              possibleDirs.sort((a, b) => {
+                const ax = ghost.x + a.dx;
+                const ay = ghost.y + a.dy;
+                const bx = ghost.x + b.dx;
+                const by = ghost.y + b.dy;
+                
+                const distA = (ax - pacCol) ** 2 + (ay - pacRow) ** 2;
+                const distB = (bx - pacCol) ** 2 + (by - pacRow) ** 2;
+                
+                return distB - distA; // Farther is better
+              });
+              
+              ghost.direction = possibleDirs[0].dir;
+            } else {
+              // Chase Pac-Man
+              const pacCol = Math.round(pacman.x);
+              const pacRow = Math.round(pacman.y);
+              
+              possibleDirs.sort((a, b) => {
+                const ax = ghost.x + a.dx;
+                const ay = ghost.y + a.dy;
+                const bx = ghost.x + b.dx;
+                const by = ghost.y + b.dy;
+                
+                const distA = (ax - pacCol) ** 2 + (ay - pacRow) ** 2;
+                const distB = (bx - pacCol) ** 2 + (by - pacRow) ** 2;
+                
+                return distA - distB; // Closer is better
+              });
+              
+              ghost.direction = possibleDirs[0].dir;
+            }
+          }
+        }
+        
+        const dirs = [
+          {dx: 1, dy: 0},
+          {dx: 0, dy: 1},
+          {dx: -1, dy: 0},
+          {dx: 0, dy: -1}
+        ];
+        
+        const dir = dirs[ghost.direction];
+        const speed = powerPelletActive ? 0.05 : 0.07;
+        
+        const newX = ghost.x + dir.dx * speed;
+        const newY = ghost.y + dir.dy * speed;
+        
+        // Only move if valid
+        if (canMove(newX, newY)) {
+          ghost.x = newX;
+          ghost.y = newY;
+          
+          // Wrap around
+          if (ghost.x < 0) ghost.x = COLS - 1;
+          if (ghost.x >= COLS) ghost.x = 0;
+        }
+      }
+      
+      function checkCollisions() {
+        const pacCol = Math.round(pacman.x);
+        const pacRow = Math.round(pacman.y);
+        
+        ghosts.forEach(ghost => {
+          if (ghost.inCage) return; // Skip ghosts in cage
+          
+          const ghostCol = Math.round(ghost.x);
+          const ghostRow = Math.round(ghost.y);
+          
+          const dist = Math.sqrt((pacCol - ghostCol) ** 2 + (pacRow - ghostRow) ** 2);
+          
+          if (dist < 0.5) {
+            if (powerPelletActive) {
+              // Eat ghost - send to cage
+              score += 200;
+              ghost.x = ghost.startX;
+              ghost.y = ghost.startY;
+              ghost.inCage = true;
+              ghost.cageTimer = 150; // Stay in cage for ~5 seconds
+            } else {
+              // Lose life
+              lives--;
+              if (lives <= 0) {
+                gameOver = true;
+              } else {
+                // Reset positions
+                pacman.x = 15;
+                pacman.y = 19;
+                pacman.direction = 0;
+                ghosts.forEach(g => {
+                  g.x = g.startX;
+                  g.y = g.startY;
+                  g.inCage = false;
+                  g.cageTimer = 0;
+                });
+              }
+            }
+          }
+        });
+      }
+      
+      function drawMap() {
+        for (let row = 0; row < ROWS; row++) {
+          for (let col = 0; col < COLS; col++) {
+            const x = col * TILE_SIZE;
+            const y = row * TILE_SIZE;
+            
+            if (map[row][col] === 1) {
+              // Wall
+              ctx.fillStyle = '#2121FF';
+              ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+            } else if (map[row][col] === 2) {
+              // Pellet
+              ctx.fillStyle = '#FFB8FF';
+              ctx.beginPath();
+              ctx.arc(x + TILE_SIZE/2, y + TILE_SIZE/2, 2, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (map[row][col] === 3) {
+              // Power pellet
+              ctx.fillStyle = '#FFB8FF';
+              ctx.beginPath();
+              ctx.arc(x + TILE_SIZE/2, y + TILE_SIZE/2, 5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+      }
+      
+      function drawPacman() {
+        const x = pacman.x * TILE_SIZE + TILE_SIZE/2;
+        const y = pacman.y * TILE_SIZE + TILE_SIZE/2;
+        const radius = TILE_SIZE / 2 - 2;
+        
+        // Animate mouth
+        pacman.mouthOpen = (pacman.mouthOpen + 0.1) % (Math.PI / 4);
+        const mouthAngle = Math.abs(Math.sin(pacman.mouthOpen * 4)) * 0.3;
+        
+        const startAngle = pacman.direction * Math.PI / 2 + mouthAngle;
+        const endAngle = pacman.direction * Math.PI / 2 + Math.PI * 2 - mouthAngle;
+        
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.arc(x, y, radius, startAngle, endAngle);
+        ctx.lineTo(x, y);
+        ctx.fill();
+      }
+      
+      function drawGhost(ghost) {
+        const x = ghost.x * TILE_SIZE + TILE_SIZE/2;
+        const y = ghost.y * TILE_SIZE + TILE_SIZE/2;
+        const radius = TILE_SIZE / 2 - 2;
+        
+        if (powerPelletActive) {
+          ctx.fillStyle = '#0000FF';
+        } else {
+          ctx.fillStyle = ghost.color;
+        }
+        
+        // Body
+        ctx.beginPath();
+        ctx.arc(x, y - 2, radius, Math.PI, 0);
+        ctx.lineTo(x + radius, y + radius);
+        ctx.lineTo(x + radius - 3, y + radius - 3);
+        ctx.lineTo(x + radius - 6, y + radius);
+        ctx.lineTo(x, y + radius);
+        ctx.lineTo(x - radius + 6, y + radius);
+        ctx.lineTo(x - radius + 3, y + radius - 3);
+        ctx.lineTo(x - radius, y + radius);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Eyes
+        if (!powerPelletActive) {
+          ctx.fillStyle = '#FFF';
+          ctx.beginPath();
+          ctx.arc(x - 3, y - 2, 3, 0, Math.PI * 2);
+          ctx.arc(x + 3, y - 2, 3, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = '#000';
+          ctx.beginPath();
+          ctx.arc(x - 3, y - 2, 1.5, 0, Math.PI * 2);
+          ctx.arc(x + 3, y - 2, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      
+      function drawUI() {
+        ctx.fillStyle = '#FFF';
+        ctx.font = '16px Arial';
+        ctx.fillText(`Score: ${score}`, 10, 380);
+        ctx.fillText(`Lives: ${lives}`, 520, 380);
+        
+        if (gameOver) {
+          ctx.fillStyle = '#FF0000';
+          ctx.font = '30px Arial';
+          ctx.fillText('GAME OVER', 220, 200);
+        }
+      }
+      
+      function update() {
+        if (gameOver) return;
+        
+        movePacman();
+        ghosts.forEach(moveGhost);
+        checkCollisions();
+        
+        if (powerPelletActive) {
+          powerPelletTimer--;
+          if (powerPelletTimer <= 0) {
+            powerPelletActive = false;
+          }
+        }
+      }
+      
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        drawMap();
+        drawPacman();
+        ghosts.forEach(drawGhost);
+        drawUI();
+        
+        update();
+        requestAnimationFrame(draw);
+      }
+      
+      draw();
+    </script>
+  </body>
+</html>

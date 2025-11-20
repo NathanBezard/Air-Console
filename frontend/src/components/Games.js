@@ -4,8 +4,8 @@ import './Game.css';
 
 
 function GameContainer() {
-  const [currentGame, setCurrentGame] = useState("/Games/Tank_shooter/tank_shooter.html");
-  const [gameName, setGameName] = useState("Tank Shooter");
+  const [currentGame, setCurrentGame] = useState("/Games/Pacman/pacman.html");
+  const [gameName, setGameName] = useState("Pac man");
   const iframeRef = useRef(null);
 
   useEffect(() => {
@@ -61,6 +61,13 @@ function GameContainer() {
       <img
         src="/image/tank_icon.png"
         alt="Tank Icon"
+        className="icon"
+      />
+    </button>
+    <button onClick={() => setGame("pacman")} className="button">
+      <img
+        src="/image/pacman_icon.png"
+        alt="pacman Icon"
         className="icon"
       />
     </button>
