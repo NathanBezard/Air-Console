@@ -43,6 +43,8 @@
       var brickOffsetLeft = 30;
       var score = 0;
       var lives = 3;
+      var id_p1 = -1;
+      var id_p2 = -1;
 
       var bricks = [];
 
@@ -79,14 +81,24 @@
         if (!event.data || !event.data.type) return;
         const command = event.data.type;
 
-        if (command === "1 left") {
-          window.movePaddleLeft();
-        } else if (command === "1 right") {
-          window.movePaddleRight();
+        const parts = command.split(" ");
+        if (parts.length !== 2) return;
+
+        if (id_p1 == -1) id_p1 = parts[0];
+        if (id_p1 != -1 && id_p2 == -1) id_p2 = parts[0];
+
+        const direction = parts[1];
+
+        if (parts[0] == id_p1) {
+          if (direction === "left") {
+            window.movePaddleLeft();
+          } else if (direction === "right") {
+            window.movePaddleRight();
+          }
         }
-        else if (command === "2 left") {
+        else if (direction === "left") {
           window.movePaddle2Left();
-        } else if (command === "2 right") {
+        } else if (direction === "right") {
           window.movePaddle2Right();
         }
       });

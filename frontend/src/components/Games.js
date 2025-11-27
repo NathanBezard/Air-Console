@@ -71,6 +71,13 @@ function GameContainer() {
         className="icon"
       />
     </button>
+    <button onClick={() => setGame("space_invader")} className="button">
+      <img
+        src="/image/space_invader_icon.png"
+        alt="space_invader Icon"
+        className="icon"
+      />
+    </button>
   </div>
 </div>
   );

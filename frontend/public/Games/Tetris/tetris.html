@@ -178,25 +178,30 @@
         const command = event.data.type;
         const now = Date.now();
         
-        if (command === "1 left") {
+        const parts = command.split(" ");
+        if (parts.length !== 2) return;
+
+        const direction = parts[1];
+
+        if (direction === "left") {
           // Allow repeated left movement every 150ms
           if (now - lastMoveTime > 150) {
             moveLeft();
             lastMoveTime = now;
           }
-        } else if (command === "1 right") {
+        } else if (direction === "right") {
           // Allow repeated right movement every 150ms
           if (now - lastMoveTime > 150) {
             moveRight();
             lastMoveTime = now;
           }
-        } else if (command === "1 up") {
+        } else if (direction === "up") {
           // Rotate only once per button press (300ms cooldown)
           if (now - lastRotateTime > 300) {
             rotate();
             lastRotateTime = now;
           }
-        } else if (command === "1 down") {
+        } else if (direction === "down") {
           // Drop only once per button press (500ms cooldown)
           if (!isDropping && now - lastDropTime > 500) {
             drop();
